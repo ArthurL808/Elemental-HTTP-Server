@@ -35,7 +35,7 @@ const server = http.createServer((req, res) => {
   // }
   // });
 });
-
+})
 server.listen(PORT, () => {
   console.log(`Server started on PORT: ${PORT}`);
 });
@@ -53,23 +53,35 @@ function getHandler(req,res) {
         res.end()
       }
     })
+  }else if (req.url === `/css/styles.css`){
+    fs.readFile(`./public/css/styles.css`,function (err,data) {
+      if(err){
+        getHandler(data,`./public/404.html`)
+      }else{
+        res.writeHead(200,{
+          'content-type': 'text/css',
+          'content-length': data.length,
+        })
+        res.write(data.toString())
+        res.end()
+      }
+    })
+  }else{
+    fs.readFile(`./public${req.url}`,function (err,data) {
+      if(err){
+        getHandler(data,`./public/404.html`)
+      }else{
+        res.writeHead(200,{
+          'content-type': 'text/html',
+          'content-length': data.length,
+        })
+        res.write(data.toString())
+        res.end()
+      }
+    })
   }
 }
 
-// function getHandler(req, res) {
-//   fs.readFile(`./public/index.html`,function (err,data) {
-//     if (err){
-//       getHandler(arg1, '/404.html')
-//     } else {
-//       res.writeHead(200, {
-//         'content-type': 'text/html',
-//         'content-length': data.length,
-//       });
-//       res.write(data.toString())
-//       res.end();
-//     }
-  
-// }
 
 // fs.readFile('./test.txt', (err, data) => {
   //   if (err) {
@@ -108,4 +120,3 @@ function getHandler(req,res) {
 //     });
 //   });
 // });
-})
