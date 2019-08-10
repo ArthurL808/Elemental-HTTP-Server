@@ -39,11 +39,12 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
   console.log(`Server started on PORT: ${PORT}`);
 });
+
 function getHandler(req,res) {
   if(req.url === `/` || req.url === `/index.html`){
     fs.readFile(`./public/index.html`, function (err,data) {
       if(err){
-        getHandler(data, `./public/404.html`)
+        errorHandler(data)
       }else{
         res.writeHead(200,{
           'content-type': 'text/html',
@@ -81,7 +82,16 @@ function getHandler(req,res) {
     })
   }
 }
-
+function errorHandler(req,res) {
+  fs.readFile(`./public/404.html`,function (data) {
+    res.writeHead(404,{
+      'content-type': 'text/html',
+      'content-length': data.length
+    })
+  })
+res.write(data.toString())
+res.end()
+}
 
 // fs.readFile('./test.txt', (err, data) => {
   //   if (err) {
