@@ -82,17 +82,17 @@ function getHandler(req,res) {
     })
   }
 }
-function errorHandler(req,res) {
+function errorHandler(res) {
   fs.readFile(`./public/404.html`,function (data) {
     res.writeHead(404,{
       'content-type': 'text/html',
       'content-length': data.length
     })
+    res.write(data.toString())
+    res.end()
   })
-res.write(data.toString())
-res.end()
 }
-
+    
 // fs.readFile('./test.txt', (err, data) => {
   //   if (err) {
   //     return console.log('could not write the file');
