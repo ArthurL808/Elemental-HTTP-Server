@@ -37,8 +37,10 @@ const server = http.createServer((req, res) => {
   req.on("end", () => {
     if (req.method === `POST`) {
       postHandler(req, res, body);
-    } else {
+    } else if (req.method === `GET`) {
       getHandler(req, res);
+    } else {
+      putHandler(req, res, body);
     }
   });
 });
@@ -90,7 +92,6 @@ function getHandler(req, res) {
   }
 }
 
-
 function errorHandler(res) {
   fs.readFile(`./public/404.html`, function(err, data) {
     if (err) {
@@ -117,6 +118,7 @@ function postHandler(req, res, body) {
         return errorHandler(res);
       }
 
+      //rewriting Index
       fs.readdir(`./public`, function(err, data) {
         if (err) {
           errorHandler(res);
@@ -125,12 +127,13 @@ function postHandler(req, res, body) {
             return ![`.keep`, `404.html`, `css`, `index.html`].includes(e);
           });
 
-          fs.writeFile(`./public/index.html`, makeIndex(filtered), function (err) {
-            if(err){
-              errorHandler(res)
+          fs.writeFile(`./public/index.html`, makeIndex(filtered), function(
+            err
+          ) {
+            if (err) {
+              errorHandler(res);
             }
-          })
-
+          });
 
           let str = `{ "success" : true }`;
           res.writeHead(200, {
@@ -145,9 +148,8 @@ function postHandler(req, res, body) {
   );
 }
 
-
 function makeIndex(filtered) {
- let idx = `<!DOCTYPE html>
+  let idx = `<!DOCTYPE html>
   <html lang="en">
   <head>
     <meta charset="UTF-8">
@@ -158,24 +160,43 @@ function makeIndex(filtered) {
     <h1>The Elements</h1>
     <h2>These are all the known elements.</h2>
     <h3>These are ${filtered.length}</h3>
-    <ol>`
-      
-  let idx2 =  `
+    <ol>`;
+
+  let idx2 = `
   </ol>
   </body>
-  </html>`
-  for (let i  = 0; i < filtered.length; i++) {
-    let name = filtered[i].split('.')
+  </html>`;
+  for (let i = 0; i < filtered.length; i++) {
+    let name = filtered[i].split(".");
     let listElements = `<li>
     <a href= "/${filtered[i]}">${name[0]}</a>
-    </li>` 
-    idx += listElements
+    </li>`;
+    idx += listElements;
   }
-  idx += idx2
-  return idx
-  }
+  idx += idx2;
+  return idx;
+}
 
-  
+function putHandler(req, res, body) {
+  let reqParse = querystring.parse(body);
+  console.log(reqParse)
+  fs.writeFile(
+    `./public/${reqParse.elementName}.html`,
+    newPost(reqParse),
+    function(err, data) {
+      if (err) {
+        return errorHandler(err);
+      }
+      let str = `{ "success" : true }`;
+      res.writeHead(200, {
+        "content-type": "application/json",
+        "content-length": str.length
+      });
+      res.write(str);
+      res.end();
+    }
+  );
+}
 // fs.readFile('./test.txt', (err, data) => {
 //   if (err) {
 //     return console.log('could not write the file');
