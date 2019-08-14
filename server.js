@@ -39,8 +39,10 @@ const server = http.createServer((req, res) => {
       postHandler(req, res, body);
     } else if (req.method === `GET`) {
       getHandler(req, res);
-    } else {
+    } else if(req.method === `PUT`){
       putHandler(req, res, body);
+    }else if (req.method === `DELETE`){
+      deleteHandler(req,res,body)
     }
   });
 });
@@ -203,6 +205,16 @@ function putHandler(req, res, body) {
       }
     );
   });
+}
+
+function deleteHandler(req,res,body) {
+  let reqParse = querystring.parse(body);
+  fs.unlink(`./public/${reqParse.elementName}.html`,function (err,data) {
+    if(err){
+      return errorHandler(res)
+    }
+    makeIndex(filtered)
+  })
 }
 // fs.readFile('./test.txt', (err, data) => {
 //   if (err) {
