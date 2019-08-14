@@ -179,23 +179,30 @@ function makeIndex(filtered) {
 
 function putHandler(req, res, body) {
   let reqParse = querystring.parse(body);
-  console.log(reqParse)
-  fs.writeFile(
-    `./public/${reqParse.elementName}.html`,
-    newPost(reqParse),
-    function(err, data) {
-      if (err) {
-        return errorHandler(err);
-      }
-      let str = `{ "success" : true }`;
-      res.writeHead(200, {
-        "content-type": "application/json",
-        "content-length": str.length
-      });
-      res.write(str);
-      res.end();
+  fs.stat(`./public/${reqParse.elementName}.html`, function(err, stats) {
+    if (err) {
+      return errorHandler(res);
     }
-  );
+    if (!stats) {
+      return errorHandler(res);
+    }
+    fs.writeFile(
+      `./public/${reqParse.elementName}.html`,
+      newPost(reqParse),
+      function(err, data) {
+        if (err) {
+          return errorHandler(err);
+        }
+        let str = `{ "success" : true }`;
+        res.writeHead(200, {
+          "content-type": "application/json",
+          "content-length": str.length
+        });
+        res.write(str);
+        res.end();
+      }
+    );
+  });
 }
 // fs.readFile('./test.txt', (err, data) => {
 //   if (err) {
