@@ -207,13 +207,36 @@ function putHandler(req, res, body) {
   });
 }
 
-function deleteHandler(req,res,body) {
-  let reqParse = querystring.parse(body);
-  fs.unlink(`./public/${reqParse.elementName}.html`,function (err,data) {
+function deleteHandler(req,res) {
+  fs.unlink(`./public/${req.url}`,function (err,data) {
     if(err){
       return errorHandler(res)
     }
-    makeIndex(filtered)
+    fs.readdir(`./public`, function(err, data) {
+      if (err) {
+        errorHandler(res);
+      } else {
+        let filtered = data.filter(function(e) {
+          return ![`.keep`, `404.html`, `css`, `index.html`].includes(e);
+        });
+
+        fs.writeFile(`./public/index.html`, makeIndex(filtered) ,function(
+          err
+        ) {
+          if (err) {
+            errorHandler(res);
+          }
+        });
+
+        let str = `{ "success" : true }`;
+        res.writeHead(200, {
+          "content-type": "application/json",
+          "content-length": str.length
+        });
+        res.write(str);
+        res.end();
+      }
+    });
   })
 }
 // fs.readFile('./test.txt', (err, data) => {
