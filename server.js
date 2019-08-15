@@ -22,12 +22,6 @@ function newPost(reqParse) {
   </html>`;
 }
 const server = http.createServer((req, res) => {
-  console.log(req.method);
-  console.log(req.url);
-  console.log(req.headers);
-
-  // body???
-
   let body = "";
   req.on("data", chunk => {
     let test = chunk.toString();
@@ -39,10 +33,10 @@ const server = http.createServer((req, res) => {
       postHandler(req, res, body);
     } else if (req.method === `GET`) {
       getHandler(req, res);
-    } else if(req.method === `PUT`){
+    } else if (req.method === `PUT`) {
       putHandler(req, res, body);
-    }else if (req.method === `DELETE`){
-      deleteHandler(req,res,body)
+    } else if (req.method === `DELETE`) {
+      deleteHandler(req, res, body);
     }
   });
 });
@@ -207,10 +201,10 @@ function putHandler(req, res, body) {
   });
 }
 
-function deleteHandler(req,res) {
-  fs.unlink(`./public/${req.url}`,function (err,data) {
-    if(err){
-      return errorHandler(res)
+function deleteHandler(req, res) {
+  fs.unlink(`./public/${req.url}`, function(err, data) {
+    if (err) {
+      return errorHandler(res);
     }
     fs.readdir(`./public`, function(err, data) {
       if (err) {
@@ -220,9 +214,7 @@ function deleteHandler(req,res) {
           return ![`.keep`, `404.html`, `css`, `index.html`].includes(e);
         });
 
-        fs.writeFile(`./public/index.html`, makeIndex(filtered) ,function(
-          err
-        ) {
+        fs.writeFile(`./public/index.html`, makeIndex(filtered), function(err) {
           if (err) {
             errorHandler(res);
           }
@@ -237,42 +229,8 @@ function deleteHandler(req,res) {
         res.end();
       }
     });
-  })
+  });
 }
-// fs.readFile('./test.txt', (err, data) => {
-//   if (err) {
-//     return console.log('could not write the file');
-//   }
-//   console.log(data);
-// });
-
-// req.on('end', () => {
-// //  figure out newElement.html string data
-//  // using the contents of the request
-
-//   // write the newElement.html file
-//   fs.writeFile('./newElement.html', (err, data) => {
-//     if (err) {
-//       return console.log(err);
-//     }
-
-//     // read contents of the public dir
-//     fs.readdir('./', (err, dir) => {
-//       if (err) {
-//         return console.log(err);
-//       }
-
-//       // figure out new index.html
-//       const index = '<html></html>';
-
-//       // write new index.html
-//       fs.writeFile('./index.html', index, (err) => {
-//         if (err) {
-//           return console.log(err);
-//         }
-
-//         res.end();
-//       });
-//     });
-//   });
-// });
+function authorizationHandler(req,res) {
+  
+}
