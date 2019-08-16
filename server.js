@@ -24,7 +24,6 @@ function newPost(reqParse) {
 const server = http.createServer((req, res) => {
   let body = "";
   req.on("data", chunk => {
-    let test = chunk.toString();
     body += chunk;
   });
 
@@ -129,15 +128,14 @@ function postHandler(req, res, body) {
             if (err) {
               errorHandler(res);
             }
+            let str = `{ "success" : true }`;
+            res.writeHead(200, {
+              "content-type": "application/json",
+              "content-length": str.length
+            });
+            res.write(str);
+            res.end();
           });
-
-          let str = `{ "success" : true }`;
-          res.writeHead(200, {
-            "content-type": "application/json",
-            "content-length": str.length
-          });
-          res.write(str);
-          res.end();
         }
       });
     }
@@ -218,19 +216,15 @@ function deleteHandler(req, res) {
           if (err) {
             errorHandler(res);
           }
+          let str = `{ "success" : true }`;
+          res.writeHead(200, {
+            "content-type": "application/json",
+            "content-length": str.length
+          });
+          res.write(str);
+          res.end();
         });
-
-        let str = `{ "success" : true }`;
-        res.writeHead(200, {
-          "content-type": "application/json",
-          "content-length": str.length
-        });
-        res.write(str);
-        res.end();
       }
     });
   });
-}
-function authorizationHandler(req,res) {
-  
 }
